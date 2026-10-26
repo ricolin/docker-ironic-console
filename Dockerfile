@@ -4,7 +4,7 @@
 # Console container started by ironic-conductor for each bare metal graphical
 # console. Built from upstream Ironic's tools/vnc-container.
 FROM scratch AS src
-ADD https://opendev.org/openstack/ironic.git#d689812fb50bdefe12db17d5ca67be6a6bd59155 /
+ADD https://github.com/openstack/ironic.git#d689812fb50bdefe12db17d5ca67be6a6bd59155 /
 
 FROM ubuntu:24.04@sha256:c35e29c9450151419d9448b0fd75374fec4fff364a27f176fb458d472dfc9e54
 ENV FIREFOX_USER=firefox
