@@ -20,7 +20,8 @@ apt-get purge -qq -y software-properties-common
 apt-get autoremove -qq -y
 apt-get clean
 rm -rf /var/lib/apt/lists/*
-useradd --create-home --home-dir ${FIREFOX_USER_HOME} --shell /bin/bash ${FIREFOX_USER}
+groupadd -g 42424 ${FIREFOX_USER}
+useradd -u 42424 -g 42424 --create-home --home-dir ${FIREFOX_USER_HOME} --shell /bin/bash ${FIREFOX_USER}
 SCRIPT
 ENV DISPLAY_WIDTH=1280 \
     DISPLAY_HEIGHT=960 \
@@ -33,7 +34,12 @@ ENV DISPLAY_WIDTH=1280 \
     EXTENSION_PATH=/usr/lib/firefox-esr-addons/extensions/@ironic-console.openstack.org
 COPY --from=src /tools/vnc-container/bin/ /usr/local/bin/
 COPY --from=src /tools/vnc-container/drivers /drivers
-COPY --from=src /tools/vnc-container/extension /usr/lib/firefox-esr-addons/extensions/@ironic-console.openstack.org
+COPY --from=src --chown=42424:42424 /tools/vnc-container/extension /usr/lib/firefox-esr-addons/extensions/@ironic-console.openstack.org
+# The entrypoint writes the Firefox policies and the extension config at start,
+# so the unprivileged user owns those two locations.
+RUN install -d -o 42424 -g 42424 /etc/firefox/policies
+COPY runuser /usr/local/sbin/runuser
+USER 42424:42424
 EXPOSE 5900
 ENTRYPOINT ["/usr/bin/dumb-init", "--single-child", "--"]
 CMD ["/usr/local/bin/start-x11vnc.py"]

@@ -1,0 +1,13 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: © 2026 VEXXHOST, Inc.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# The console runs entirely as the unprivileged firefox user, so the upstream
+# entrypoint's "runuser -u firefox -- <command>" has no user to switch to.
+# Run the command directly, and refuse anything else.
+if [ "$1" = "-u" ] && [ "$3" = "--" ] && [ "$2" = "$(id -un)" ]; then
+    shift 3
+    exec "$@"
+fi
+echo "runuser: only '-u $(id -un) -- <command>' is supported" >&2
+exit 1
