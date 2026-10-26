@@ -6,7 +6,7 @@
 FROM scratch AS src
 ADD https://github.com/openstack/ironic.git#d689812fb50bdefe12db17d5ca67be6a6bd59155 /
 
-FROM ubuntu:24.04@sha256:c35e29c9450151419d9448b0fd75374fec4fff364a27f176fb458d472dfc9e54
+FROM ubuntu:26.04@sha256:c098726dd9b9733f3e885f8de0ef375206a311b0a317eadc40d347b1115fb944
 ENV FIREFOX_USER=firefox
 ENV FIREFOX_USER_HOME=/home/${FIREFOX_USER}
 RUN <<SCRIPT bash -xe
