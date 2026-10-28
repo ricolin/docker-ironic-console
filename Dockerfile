@@ -9,7 +9,9 @@ ADD https://github.com/openstack/ironic.git#d689812fb50bdefe12db17d5ca67be6a6bd5
 FROM ubuntu:24.04@sha256:c35e29c9450151419d9448b0fd75374fec4fff364a27f176fb458d472dfc9e54
 ENV FIREFOX_USER=firefox
 ENV FIREFOX_USER_HOME=/home/${FIREFOX_USER}
-RUN <<SCRIPT bash -xe
+RUN <<'SCRIPT'
+#!/bin/bash
+set -xe
 apt-get update -qq
 apt-get install -qq -y --no-install-recommends \
     curl dumb-init iproute2 procps psmisc python3-requests \
@@ -43,7 +45,8 @@ COPY runuser /usr/local/sbin/runuser
 USER 42424:42424
 RUN test "$(id -un)" = "${FIREFOX_USER}" && \
     test "$(id -u)" = 42424 && \
-    test -w "${FIREFOX_USER_HOME}"
+    test -w "${FIREFOX_USER_HOME}" && \
+    "${FIREFOX}" --version
 EXPOSE 5900
 ENTRYPOINT ["/usr/bin/dumb-init", "--single-child", "--"]
 CMD ["/usr/local/bin/start-x11vnc.py"]
