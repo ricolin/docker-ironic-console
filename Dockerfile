@@ -20,9 +20,10 @@ apt-get purge -qq -y software-properties-common
 apt-get autoremove -qq -y
 apt-get clean
 rm -rf /var/lib/apt/lists/*
-groupadd -g 42424 ${FIREFOX_USER}
-useradd -u 42424 -g 42424 --create-home --home-dir ${FIREFOX_USER_HOME} --shell /bin/bash ${FIREFOX_USER}
 SCRIPT
+RUN groupadd -g 42424 "${FIREFOX_USER}" && \
+    useradd -u 42424 -g 42424 --create-home \
+        --home-dir "${FIREFOX_USER_HOME}" --shell /bin/bash "${FIREFOX_USER}"
 ENV DISPLAY_WIDTH=1280 \
     DISPLAY_HEIGHT=960 \
     APP=fake \
@@ -40,6 +41,9 @@ COPY --from=src --chown=42424:42424 /tools/vnc-container/extension /usr/lib/fire
 RUN install -d -o 42424 -g 42424 /etc/firefox/policies
 COPY runuser /usr/local/sbin/runuser
 USER 42424:42424
+RUN test "$(id -un)" = "${FIREFOX_USER}" && \
+    test "$(id -u)" = 42424 && \
+    test -w "${FIREFOX_USER_HOME}"
 EXPOSE 5900
 ENTRYPOINT ["/usr/bin/dumb-init", "--single-child", "--"]
 CMD ["/usr/local/bin/start-x11vnc.py"]
