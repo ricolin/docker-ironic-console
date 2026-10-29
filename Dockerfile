@@ -9,20 +9,16 @@ ADD https://github.com/openstack/ironic.git#d689812fb50bdefe12db17d5ca67be6a6bd5
 FROM ubuntu:24.04@sha256:c35e29c9450151419d9448b0fd75374fec4fff364a27f176fb458d472dfc9e54
 ENV FIREFOX_USER=firefox
 ENV FIREFOX_USER_HOME=/home/${FIREFOX_USER}
-RUN <<'SCRIPT'
-#!/bin/bash
-set -xe
-apt-get update -qq
-apt-get install -qq -y --no-install-recommends \
-    curl dumb-init iproute2 procps psmisc python3-requests \
-    software-properties-common x11vnc xvfb
-add-apt-repository -y ppa:mozillateam/ppa
-apt-get install -qq -y --no-install-recommends firefox-esr
-apt-get purge -qq -y software-properties-common
-apt-get autoremove -qq -y
-apt-get clean
-rm -rf /var/lib/apt/lists/*
-SCRIPT
+RUN apt-get update -qq && \
+    apt-get install -qq -y --no-install-recommends \
+        curl dumb-init iproute2 procps psmisc python3-requests \
+        software-properties-common x11vnc xvfb && \
+    add-apt-repository -y ppa:mozillateam/ppa && \
+    apt-get install -qq -y --no-install-recommends firefox-esr && \
+    apt-get purge -qq -y software-properties-common && \
+    apt-get autoremove -qq -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 RUN groupadd -g 42424 "${FIREFOX_USER}" && \
     useradd -u 42424 -g 42424 --create-home \
         --home-dir "${FIREFOX_USER_HOME}" --shell /bin/bash "${FIREFOX_USER}"
